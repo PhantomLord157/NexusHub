@@ -1,0 +1,65 @@
+-- Library Setup --
+
+local Library, Toggles, Options = loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhantomLord157/Nexus/main/betterUIlibrary'), true))()
+local SaveManager = loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhantomLord157/Nexus/refs/heads/main/oldsave'), true))()
+local ThemeManager = loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhantomLord157/Nexus/refs/heads/main/oldtheme'), true))()
+
+local title2 = 'Operation Nexus'
+local title = 'Operation Nexus | v%s | fps %s | ping %s'
+
+local Window = Library:CreateWindow({
+    Title = title2,
+    Center = true,
+    AutoShow = true,
+    TabPadding = 8
+})
+
+-- Tab Creation --
+
+local Tabs = {
+    Info = Window:AddTab('Info'),
+    Scripts = Window:AddTab('Scripts'),
+    Settings = Window:AddTab('Settings')
+}
+
+-- Tabbox Creation --
+
+local RightInfoTabbox = Tabs.Info:AddRightTabbox()
+local LeftInfoTabbox = Tabs.Info:AddLeftTabbox()
+
+local RightScriptsTabbox = Tabs.Scripts:AddRightTabbox()
+local LeftScriptsTabbox = Tabs.Scripts:AddLeftTabbox()
+
+local RightSettingsTabbox = Tabs.Settings:AddRightTabbox()
+local LeftSettingsTabbox = Tabs.Settings:AddLeftTabbox()
+
+-- Tab Creation --
+
+local CreditsTab = LeftInfoTabbox:AddTab('Credits')
+
+local UniversialScript = LeftScriptsTabbox:AddTab('Universial')
+local SpecializedScripts = RightScriptsTabbox:AddTab('Specialized')
+
+-- Button Creation --
+
+SpecializedScripts:AddLabel('Project Delta')
+
+SpecializedScripts:AddButton('Nexus.Core', function()
+    
+end)
+
+SpecializedScripts:AddLabel('')
+
+SpecializedScripts:AddLabel('Blitzborne')
+
+SpecializedScripts:AddButton('Nexus.Void', function()
+    
+end)
+
+SpecializedScripts:AddLabel('')
+
+SpecializedScripts:AddLabel('War Tycoon')
+
+SpecializedScripts:AddButton('Nexus.Shmeat', function()
+    
+end)
