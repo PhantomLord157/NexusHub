@@ -42,10 +42,24 @@ local SpecializedScripts = RightScriptsTabbox:AddTab('Specialized')
 
 -- Button Creation --
 
+UniversialScript:AddLabel('Universial Nexus')
+
+UniversialScript:AddButton('Nexus.Sky', function()
+    loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhantomLord157/NexusHub/refs/heads/main/Nexus.Sky'), true))()
+end)
+
+UniversialScript:AddLabel('')
+
+UniversialScript:AddLabel('Inf Yeild')
+
+UniversialScript:AddButton('Inf Yeild', function()
+    loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhantomLord157/ProjectBullShit/main/Inf%20Yeild'),true))()
+end)
+
 SpecializedScripts:AddLabel('Project Delta')
 
 SpecializedScripts:AddButton('Nexus.Core', function()
-    
+    loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhantomLord157/NexusHub/refs/heads/main/Nexus.Core'), true))()
 end)
 
 SpecializedScripts:AddLabel('')
@@ -53,7 +67,7 @@ SpecializedScripts:AddLabel('')
 SpecializedScripts:AddLabel('Blitzborne')
 
 SpecializedScripts:AddButton('Nexus.Void', function()
-    
+    loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhantomLord157/NexusHub/refs/heads/main/Nexus.Void'), true))()
 end)
 
 SpecializedScripts:AddLabel('')
@@ -61,5 +75,5 @@ SpecializedScripts:AddLabel('')
 SpecializedScripts:AddLabel('War Tycoon')
 
 SpecializedScripts:AddButton('Nexus.Shmeat', function()
-    
+    loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhantomLord157/NexusHub/refs/heads/main/Nexus.Shmeat'), true))()
 end)
