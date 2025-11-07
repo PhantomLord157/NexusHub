@@ -11,8 +11,8 @@ local Library, Toggles, Options = loadstring(game:HttpGet(('https://raw.githubus
 local SaveManager = loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhantomLord157/Nexus/refs/heads/main/oldsave'), true))()
 local ThemeManager = loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhantomLord157/Nexus/refs/heads/main/oldtheme'), true))()
 
-local title2 = 'Operation Nexus'
-local title = 'Operation Nexus | v%s | fps %s | ping %s'
+local title2 = 'Nexus.Sky'
+local title = 'Nexus.Sky | v%s | fps %s | ping %s'
 
 local Window = Library:CreateWindow({
     Title = title2,
