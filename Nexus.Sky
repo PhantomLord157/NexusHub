@@ -1,1 +1,352 @@
+-- Services --
 
+local Players = game:GetService('Players')
+local Player = Players.LocalPlayer
+local RunService = game:GetService('RunService')
+local TextService = game:GetService('TextService')
+
+-- Library Setup --
+
+local Library, Toggles, Options = loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhantomLord157/Nexus/main/betterUIlibrary'), true))()
+local SaveManager = loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhantomLord157/Nexus/refs/heads/main/oldsave'), true))()
+local ThemeManager = loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhantomLord157/Nexus/refs/heads/main/oldtheme'), true))()
+
+local title2 = 'Operation Nexus'
+local title = 'Operation Nexus | v%s | fps %s | ping %s'
+
+local Window = Library:CreateWindow({
+    Title = title2,
+    Center = true,
+    AutoShow = true,
+    TabPadding = 8
+})
+
+-- Tab Creation --
+
+local Tabs = {
+    Visuals = Window:AddTab('Visuals'),
+    Misc = Window:AddTab('Misc'),
+    Settings = Window:AddTab('Settings'),
+    Testing = Window:AddTab('Testing')
+}
+
+-- Tabbox Creation --
+
+local RightVisualsTabbox = Tabs.Visuals:AddRightTabbox()
+local LeftVisualsTabbox = Tabs.Visuals:AddLeftTabbox()
+
+local RightMiscTabbox = Tabs.Misc:AddRightTabbox()
+local LeftMiscTabbox = Tabs.Misc:AddLeftTabbox()
+
+local RightSettingsTabbox = Tabs.Settings:AddRightTabbox()
+local LeftSettingsTabbox = Tabs.Settings:AddLeftTabbox()
+
+local RightTestingTabbox = Tabs.Testing:AddRightTabbox()
+local LeftTestingTabbox = Tabs.Testing:AddLeftTabbox()
+
+-- Tab Creation --
+
+local PlayerESPTab = LeftVisualsTabbox:AddTab('Player ESP')
+
+local JoinLeaveLogs = RightMiscTabbox:AddTab('Join/Leave Logs')
+
+-- Functions --
+
+-- ESP
+
+local Players = game:GetService('Players')
+local Player = Players.LocalPlayer
+
+local ESP = {
+    Main = {
+        Enabled = true,
+
+        Text = {
+            Enabled = true,
+            Color3 = Color3.fromRGB(255, 255, 255),
+            Size = 8,
+            TextTrasnparency = 0
+        }
+    },
+
+    Players = {
+        Enabled = false,
+
+        Text = {
+            Enabled = false,
+
+            Names = false,
+            Health = false,
+            Distance = false,
+
+            Color3 = Color3.fromRGB(255, 255, 255),
+            Size = 8,
+            TextTrasnparency = 0
+        },
+    }
+}
+
+local espTargets = {}
+
+local function TargetDetection()
+    espTargets = {}
+
+    for _, Target in ipairs(Players:GetChildren()) do
+        if Target.Character and Target.Name ~= Player.Name then
+            table.insert(espTargets, Target.Character)
+        end
+    end
+end
+
+local function CalculateDistance(hrp)
+    local lhrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+    if not (lhrp and hrp) then
+        return 0
+    end
+    return math.round((lhrp.Position - hrp.Position).Magnitude)
+end
+
+local function CreateESP()
+    TargetDetection()
+
+    if not (ESP.Main.Enabled and ESP.Players.Enabled and ESP.Main.Text and ESP.Players.Text) then return end
+
+    for _, Target in ipairs(espTargets) do
+        local hrp = Target:FindFirstChild("HumanoidRootPart")
+        local Head = Target:FindFirstChild("Head")
+        local Humanoid = Target:FindFirstChildOfClass("Humanoid")
+
+        if not (hrp and Head and Humanoid) then
+            continue
+        end
+
+        if Target:FindFirstChild("Nexus") then
+            Target.Nexus:Destroy()
+        end
+
+        local NexusFolder = Instance.new('Folder')
+        NexusFolder.Name = 'Nexus'
+        NexusFolder.Parent = Target
+
+        local BillboardGui = Instance.new('BillboardGui')
+        BillboardGui.Parent = NexusFolder
+        BillboardGui.AlwaysOnTop = true
+        BillboardGui.Adornee = Head
+        BillboardGui.Size = UDim2.new(0, 200, 0, 40)
+        BillboardGui.StudsOffset = Vector3.new(0, 2, 0)
+
+        local TextLabel = Instance.new('TextLabel')
+        TextLabel.Parent = BillboardGui
+        TextLabel.TextSize = ESP.Players.Text.Size
+        TextLabel.TextColor3 = ESP.Players.Text.Color3
+        TextLabel.BackgroundTransparency = 1
+        TextLabel.TextStrokeTransparency = 0
+        TextLabel.TextTransparency = ESP.Players.Text.TextTrasnparency
+        TextLabel.Size = UDim2.new(1, 0, 1, 0)
+        TextLabel.TextScaled = false
+
+        task.spawn(function()
+            while Target and Target:FindFirstChild("HumanoidRootPart") and Target:FindFirstChildOfClass("Humanoid") and BillboardGui.Parent do
+                local Health = math.floor(Humanoid.Health)
+                local Distance = CalculateDistance(hrp)
+
+                local text = ""
+
+                if ESP.Players.Text.Names then
+                    text = text .. "Name | " .. Target.Name
+                end
+                if ESP.Players.Text.Health then
+                    text = text .. " | HP: " .. Health
+                end
+                if ESP.Players.Text.Distance then
+                    text = text .. " | " .. Distance .. " Studs"
+                end
+
+                TextLabel.Text = text
+                task.wait(0.05)
+            end
+        end)
+    end
+end
+
+local function ClearESP()
+    for _, targetPlayer in ipairs(Players:GetPlayers()) do
+        if targetPlayer.Character and targetPlayer.Character:FindFirstChild("Nexus") then
+            targetPlayer.Character.Nexus:Destroy()
+        end
+    end
+    espTargets = {}
+end
+
+local function RefreshESP()
+    ClearESP()
+    task.wait()
+    CreateESP()
+end
+
+Players.ChildAdded:Connect(RefreshESP)
+Players.ChildRemoved:Connect(RefreshESP)
+
+for _, p in ipairs(Players:GetPlayers()) do
+    p.CharacterAdded:Connect(function(character)
+        character:WaitForChild("HumanoidRootPart", 5)
+        character:WaitForChild("Head", 5)
+        RefreshESP()
+    end)
+end
+
+Players.PlayerAdded:Connect(function(p)
+    p.CharacterAdded:Connect(function(character)
+        character:WaitForChild("HumanoidRootPart", 5)
+        character:WaitForChild("Head", 5)
+        RefreshESP()
+    end)
+end)
+
+-- Join/Leave Logs
+
+local JoinLeaveLogVar = true
+local PlayerTargets = {}
+
+local function JoinLeaveLog()
+    PlayerTargets = {}
+
+    if JoinLeaveLogVar == false then return end
+
+    for _, Target in ipairs(Players:GetChildren()) do
+        table.insert(PlayerTargets, Target)
+    end
+
+    Players.ChildAdded:Connect(function(NewPlayer)
+        if JoinLeaveLogVar == false then return end
+        if PlayerTargets.NewPlayer then return end
+        table.insert(PlayerTargets, NewPlayer)
+        Library:Notify(NewPlayer.Name .. ' Joined')
+    end)
+
+    Players.ChildRemoved:Connect(function(OldPlayer)
+        if JoinLeaveLogVar == false then return end
+        if PlayerTargets.OldPlayer then return end
+        table.remove(PlayerTargets, OldPlayer)
+        Library:Notify(OldPlayer.Name .. ' Left')
+    end)
+end
+
+-- Functionality --
+
+JoinLeaveLogs:AddToggle('Enable Join/Leave Logs', {
+    Text = 'Enable Logs',
+    Default = false,
+    Callback = function(state)
+        JoinLeaveLogVar = state
+        if state then
+            JoinLeaveLog()
+        else
+            JoinLeaveLog()
+        end
+    end
+}):AddKeyPicker('Enable Logs', {
+    Default = 'None',
+    SyncToggleState = true,
+    Mode = 'Toggle',
+    Text = 'BIND',
+    NoUI = false,
+})
+
+-- ESP
+
+PlayerESPTab:AddToggle('Enable ESP', {
+    Text = 'Enable ESP',
+    Default = false,
+    Callback = function(state)
+        ESP.Players.Enabled = state
+        ESP.Main.Enabled = state
+        if state then
+            RefreshESP()
+        else
+            ClearESP()
+        end
+    end
+}):AddKeyPicker('Enable ESP', {
+    Default = 'None',
+    SyncToggleState = true,
+    Mode = 'Toggle',
+    Text = 'BIND',
+    NoUI = false,
+}):AddColorPicker('Text Color', {
+    Default = Color3.fromRGB(255, 255, 255),
+    Title = 'Text Color',
+    Transparency = 0,
+    Callback = function(color)
+        ESP.Players.Text.Color3 = color
+        ESP.Main.Text.Color3 = color
+    end
+})
+
+PlayerESPTab:AddToggle('Enable Names', {
+    Text = 'Enable Names',
+    Default = false,
+    Callback = function(state)
+        ESP.Players.Text.Names = state
+        if state then
+            RefreshESP()
+        end
+    end
+}):AddKeyPicker('Enable Names', {
+    Default = 'None',
+    SyncToggleState = true,
+    Mode = 'Toggle',
+    Text = 'BIND',
+    NoUI = false,
+})
+
+PlayerESPTab:AddToggle('Enable Health', {
+    Text = 'Enable Health',
+    Default = false,
+    Callback = function(state)
+        ESP.Players.Text.Health = state
+        if state then
+            RefreshESP()
+        end
+    end
+}):AddKeyPicker('Enable Health', {
+    Default = 'None',
+    SyncToggleState = true,
+    Mode = 'Toggle',
+    Text = 'BIND',
+    NoUI = false,
+})
+
+PlayerESPTab:AddToggle('Enable Distance', {
+    Text = 'Enable Distance',
+    Default = false,
+    Callback = function(state)
+        ESP.Players.Text.Distance = state
+        if state then
+            RefreshESP()
+        end
+    end
+}):AddKeyPicker('Enable Distance', {
+    Default = 'None',
+    SyncToggleState = true,
+    Mode = 'Toggle',
+    Text = 'BIND',
+    NoUI = false,
+})
+
+PlayerESPTab:AddSlider('Text Size', {
+    Text = 'Text Size',
+    Default = 8,
+    Min = 8,
+    Max = 20,
+    Rounding = 1,
+    Callback = function(val)
+        ESP.Main.Text.Size = val
+        ESP.Players.Text.Size = val
+        RefreshESP()
+    end
+})
+
+PlayerESPTab:AddButton('Refresh ESP', function()
+    RefreshESP()
+end)
